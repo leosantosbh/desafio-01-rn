@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { Alert } from 'react-native';
 import { Header } from '../components/Header';
 import { MyTasksList } from '../components/MyTasksList';
 import { TodoInput } from '../components/TodoInput';
@@ -11,26 +11,46 @@ interface Task {
 }
 
 export function Home() {
-  // const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   function handleAddTask(newTaskTitle: string) {
-    //TODO - add new task if it's not empty
+    if (newTaskTitle.length > 0) {
+      const newTask = {
+        id: new Date().getTime(),
+        title: newTaskTitle,
+        done: false,
+      }
+  
+      setTasks(prevState => [...prevState, newTask])
+    } else {
+      Alert.alert('Error', 'VocÊ não pode inserir uma tarefa em "Branco"!')
+    }
+
   }
 
   function handleMarkTaskAsDone(id: number) {
-    //TODO - mark task as done if exists
+    const tempTask: Task[] = [];
+    tasks.forEach(task => {
+      tempTask.push({
+        id: task.id,
+        title: task.title,
+        done: task.id === id ? !task.done : task.done
+      })
+    })
+    
+    setTasks(tempTask)
   }
 
   function handleRemoveTask(id: number) {
-    //TODO - remove task from state
+    setTasks(prevState => prevState.filter(
+      task => task.id !== id
+    ))
   }
 
   return (
     <>
       <Header />
-
       <TodoInput addTask={handleAddTask} />
-
       <MyTasksList 
         tasks={tasks} 
         onPress={handleMarkTaskAsDone} 
